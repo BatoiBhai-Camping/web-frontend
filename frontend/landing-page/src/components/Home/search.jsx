@@ -9,17 +9,20 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 
 export default function Search(params) {
     const [open, setOpen] = useState(false)
     const [date, setDate] = useState(undefined)
+    const [loaction, setLoacation] = useState("")
+    const navigate = useNavigate()
 
     return (
         <div className=" absolute px-4 flex flex-col md:flex-row justify-center items-center flex-wrap gap-2 py-3 w-[80vw] bg-[#FFFFFF] rounded-lg shadow-[#7bbcb076] shadow-xl">
             <div className="grid w-[250px] md:w-[300px] lg:w-full max-w-sm items-center gap-3">
                 <Label htmlFor="email" className="text-[#7BBCB0]">Location</Label>
-                <Input className="border-0 focus-visible:ring-0 placeholder:text-[#000] w-full" type="email" id="email" placeholder="Search For A Destination" />
+                <Input value={loaction} onChange={(e)=>setLoacation(e.target.value)} className="border-0 focus-visible:ring-0 placeholder:text-[#000] w-full" type="email" id="email" placeholder="Search For A Destination" />
             </div>
             <div className="hidden lg:block h-5 w-0.5 rounded-lg bg-[#e8eaeb98]"/>
             <div className="flex flex-col gap-3 ">
@@ -50,7 +53,13 @@ export default function Search(params) {
             </div>
             <div className="hidden lg:block h-5 w-0.5 rounded-lg bg-[#e8eaeb98]"/>
             <div>
-                <Button variant="outline" className="bg-[#FFDA32] rounded-4xl px-8 shadow-[#ffd93244] shadow-lg">Search</Button>
+                <Button onClick={
+                    ()=>{
+                        if (loaction!="" && date!=undefined) {
+                            navigate(`/search?date=${date}&destination=${loaction}`)
+                        }
+                    }
+                } variant="outline" className="bg-[#FFDA32] rounded-4xl px-8 shadow-[#ffd93244] shadow-lg">Search</Button>
             </div>
         </div>
     )
