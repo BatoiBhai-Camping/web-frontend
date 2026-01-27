@@ -13,7 +13,7 @@ import {
   StatisticsSection,
 } from "@/components/dashboard/sections/Other";
 import { Card } from "@/components/ui/card";
-
+import { Loader } from "@/components/Loader";
 export default function DashboardPage() {
   const router = useNavigate();
   const [activeSection, setActiveSection] = useState("users");
@@ -49,7 +49,9 @@ export default function DashboardPage() {
   };
 
   return (
+
     <div className="h-screen flex flex-col bg-background">
+      
       <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
       <div className="flex flex-1 overflow-hidden">
