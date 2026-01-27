@@ -1,4 +1,3 @@
-"use client";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
