@@ -1,12 +1,11 @@
-import React from "react";
-
-import { useEffect, useState } from "react";
-
-import { NavLink, useNavigate } from "react-router-dom";
-import { Navbar } from "@/components/dashboard/NavBar";
 import { Footer } from "@/components/dashboard/Foother";
+import { Navbar } from "@/components/dashboard/NavBar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+
+import { Loader } from "@/components/Loader";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -14,63 +13,43 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Shield,
-  Edit2,
-  Save,
-  X,
-} from "lucide-react";
+import type { AppDispatch, RootState } from "@/store/store";
+import { ArrowLeft, Calendar, Mail, MapPin, Phone, Shield } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { useGetRootAdminProfileQuery } from "../features/auth/authApi";
+import { setCredentials } from "../features/auth/authSlice";
+import type { userType } from "../types/userType";
 
 export default function ProfilePage() {
   const router = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: "John Doe",
-    email: "admin@travel.com",
-    phone: "+1-555-0001",
-    location: "New York, USA",
-    joinDate: "2023-06-15",
-    role: "Super Admin",
-    department: "Management",
-  });
 
-  const [editData, setEditData] = useState(profileData);
+  const user: userType = useSelector((state: RootState) => state.auth.user);
+  const hasUserData: boolean = useSelector(
+    (state: RootState) => state.auth.hasUserData as boolean,
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  // Call the hook at the top level of the component
+  const { data, isLoading, isError, error } = useGetRootAdminProfileQuery(
+    undefined,
+    {
+      skip: hasUserData, // Skip the query if we already have user data
+    },
+  );
+  console.log(data);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const auth = localStorage.getItem("adminAuth");
-    if (!auth) {
-      router("/signin");
+    // Dispatch credentials when data is successfully fetched
+    if (data && !hasUserData) {
+      toast.success("Successfully loaded user data");
+      dispatch(setCredentials(data?.data));
     }
-  }, [router]);
-
-  const handleEdit = () => {
-    setIsEditing(true);
-    setEditData(profileData);
-  };
-
-  const handleSave = () => {
-    setProfileData(editData);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [data, hasUserData, dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {isLoading && <Loader></Loader>}
       <Navbar />
 
       <main className="flex-1 overflow-y-auto">
@@ -91,38 +70,32 @@ export default function ProfilePage() {
 
           {/* Profile Card */}
           <Card className="border-2 border-border mb-6">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-2xl">Profile Information</CardTitle>
-                <CardDescription>
-                  Manage your admin account details
-                </CardDescription>
-              </div>
-              {!isEditing && (
-                <Button
-                  onClick={handleEdit}
-                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  Edit Profile
-                </Button>
-              )}
+            <CardHeader>
+              <CardTitle className="text-2xl">Profile Information</CardTitle>
+              <CardDescription>View your admin account details</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-6">
               {/* Profile Avatar */}
               <div className="flex items-center gap-4">
                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-2xl">
-                    JD
-                  </span>
+                  {user?.profileImage ? (
+                    <img
+                      src={user?.profileImage || ""}
+                      className="text-primary-foreground font-bold text-2xl"
+                    />
+                  ) : (
+                    <span className="text-primary-foreground font-bold text-2xl">
+                      {user?.fullName[0]}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">
-                    {profileData.name}
+                    {user?.fullName || ""}
                   </h2>
                   <Badge className="bg-primary text-primary-foreground mt-1">
-                    {profileData.role}
+                    {user?.role || ""}
                   </Badge>
                 </div>
               </div>
@@ -137,20 +110,11 @@ export default function ProfilePage() {
                     <label className="text-sm font-medium text-foreground">
                       Full Name
                     </label>
-                    {isEditing ? (
-                      <Input
-                        name="name"
-                        value={editData.name}
-                        onChange={handleInputChange}
-                        className="border-border"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                        <span className="text-foreground">
-                          {profileData.name}
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 p-2 bg-muted rounded">
+                      <span className="text-foreground">
+                        {user?.fullName || "N/A"}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -158,21 +122,11 @@ export default function ProfilePage() {
                       <Mail className="w-4 h-4" />
                       Email Address
                     </label>
-                    {isEditing ? (
-                      <Input
-                        name="email"
-                        type="email"
-                        value={editData.email}
-                        onChange={handleInputChange}
-                        className="border-border"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                        <span className="text-foreground">
-                          {profileData.email}
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 p-2 bg-muted rounded">
+                      <span className="text-foreground">
+                        {user?.email || "N/A"}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -180,41 +134,25 @@ export default function ProfilePage() {
                       <Phone className="w-4 h-4" />
                       Phone Number
                     </label>
-                    {isEditing ? (
-                      <Input
-                        name="phone"
-                        value={editData.phone}
-                        onChange={handleInputChange}
-                        className="border-border"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                        <span className="text-foreground">
-                          {profileData.phone}
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 p-2 bg-muted rounded">
+                      <span className="text-foreground">
+                        {user?.phone || "N/A"}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      Location
+                      <Calendar className="w-4 h-4" />
+                      Account Created
                     </label>
-                    {isEditing ? (
-                      <Input
-                        name="location"
-                        value={editData.location}
-                        onChange={handleInputChange}
-                        className="border-border"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                        <span className="text-foreground">
-                          {profileData.location}
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 p-2 bg-muted rounded">
+                      <span className="text-foreground">
+                        {user?.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString()
+                          : "N/A"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -232,65 +170,132 @@ export default function ProfilePage() {
                     </label>
                     <div className="flex items-center gap-2 p-2 bg-muted rounded">
                       <span className="text-foreground">
-                        {profileData.role}
+                        {user?.role || "N/A"}
                       </span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">
-                      Department
+                      Role Status
                     </label>
                     <div className="flex items-center gap-2 p-2 bg-muted rounded">
                       <span className="text-foreground">
-                        {profileData.department}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      Join Date
-                    </label>
-                    <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                      <span className="text-foreground">
-                        {profileData.joinDate}
+                        {user?.roleStatus || "N/A"}
                       </span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">
-                      Status
+                      Email Verified
                     </label>
                     <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                      <Badge className="bg-green-100 text-green-800">
-                        Active
+                      <Badge
+                        className={
+                          user?.emailVerified
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }
+                      >
+                        {user?.emailVerified ? "Verified" : "Not Verified"}
                       </Badge>
                     </div>
                   </div>
+
+                  {/* <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">
+                      User ID
+                    </label>
+                    <div className="flex items-center gap-2 p-2 bg-muted rounded">
+                      <span className="text-foreground text-xs">
+                        {user?.id || "N/A"}
+                      </span>
+                    </div>
+                  </div> */}
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              {isEditing && (
-                <div className="border-t border-border pt-6 flex gap-2">
-                  <Button
-                    onClick={handleSave}
-                    className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    <Save className="w-4 h-4" />
-                    Save Changes
-                  </Button>
-                  <Button
-                    onClick={handleCancel}
-                    variant="outline"
-                    className="gap-2 border-border"
-                  >
-                    <X className="w-4 h-4" />
-                    Cancel
-                  </Button>
+              {/* Address Information */}
+
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5" />
+                Address Information
+              </h3>
+              {user?.address && user.address.length > 0 ? (
+                <div className="space-y-4">
+                  {user.address.map((addr) => (
+                    <Card key={addr.id} className="border border-border">
+                      <CardContent className="pt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              Address Type
+                            </label>
+                            <p className="text-foreground">
+                              {addr.addressType || "N/A"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              City
+                            </label>
+                            <p className="text-foreground">
+                              {addr.city || "N/A"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              District
+                            </label>
+                            <p className="text-foreground">
+                              {addr.district || "N/A"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              State
+                            </label>
+                            <p className="text-foreground">
+                              {addr.state || "N/A"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              Country
+                            </label>
+                            <p className="text-foreground">
+                              {addr.country || "N/A"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              PIN Code
+                            </label>
+                            <p className="text-foreground">
+                              {addr.pin || "N/A"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                              Coordinates
+                            </label>
+                            <p className="text-foreground text-sm">
+                              {addr.latitude && addr.longitude
+                                ? `${addr.latitude}, ${addr.longitude}`
+                                : "N/A"}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 bg-muted rounded text-center">
+                  <p className="text-muted-foreground">
+                    No address information available
+                  </p>
                 </div>
               )}
             </CardContent>

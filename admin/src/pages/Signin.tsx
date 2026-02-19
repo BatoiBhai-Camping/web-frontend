@@ -1,10 +1,9 @@
-import React from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { NavLink } from "react-router-dom";
+import { useLoginRootAdminMutation } from "../features/auth/authApi";
 
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -12,39 +11,45 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader } from "../components/Loader";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import {setCredentials} from "../features/auth/authSlice"
+import type { AppDispatch } from "@/store/store";
+import { useDispatch} from "react-redux";
+
+type SignInFormInputs = {
+  email: string;
+  password: string;
+};
 
 export default function SignInPage() {
-  const router = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loginUser, { isLoading}] = useLoginRootAdminMutation();
+  const dispatch = useDispatch<AppDispatch>()
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    // Simulate admin verification
-    if (email === "admin@travel.com" && password === "password123") {
-      // Store session (in real app, use proper auth)
-      localStorage.setItem(
-        "adminAuth",
-        JSON.stringify({ email, role: "admin" }),
-      );
-      router("/dashboard");
-    } else {
-      setError(
-        "Invalid email or password. Try: admin@travel.com / password123",
-      );
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormInputs>();
+  const navigate = useNavigate();
+  const onSubmit: SubmitHandler<SignInFormInputs> = async (userData) => {
+    try {
+     const res =  await loginUser(userData).unwrap();
+      toast.success("Login successfull");
+      dispatch(setCredentials(res.data))
+      navigate("/profile");
+    } catch (err: any) {
+      
+      toast.error(err?.data?.message || "Login failed")
     }
-    setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+      {isLoading && <Loader />}
       <Card className="w-full max-w-md border-2 border-border shadow-lg">
         <CardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-4">
@@ -62,15 +67,7 @@ export default function SignInPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignIn} className="space-y-4">
-            {error && (
-              <Alert className="border-destructive/50 bg-destructive/10">
-                <AlertCircle className="h-4 w-4 text-destructive" />
-                <AlertDescription className="text-destructive">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Email
@@ -78,11 +75,20 @@ export default function SignInPage() {
               <Input
                 type="email"
                 placeholder="admin@travel.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                })}
                 className="border-border focus:ring-primary"
-                required
               />
+              {errors.email && (
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
@@ -91,18 +97,27 @@ export default function SignInPage() {
               <Input
                 type="password"
                 placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
                 className="border-border focus:ring-primary"
-                required
               />
+              {errors.password && (
+                <p className="text-sm text-destructive">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              Sign in
             </Button>
           </form>
           <div className="mt-6 text-center text-sm text-muted-foreground">

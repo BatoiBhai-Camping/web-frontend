@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Navbar } from "@/components/dashboard/NavBar";
-import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Footer } from "@/components/dashboard/Foother";
-import { UsersSection } from "@/components/dashboard/sections/User";
+import { Navbar } from "@/components/dashboard/NavBar";
 import { AgentsSection } from "@/components/dashboard/sections/Agent";
-import { PackagesSection } from "@/components/dashboard/sections/Package";
 import {
-  SubAdminsSection,
   PaymentsSection,
   ReviewsSection,
   StatisticsSection,
+  SubAdminsSection,
 } from "@/components/dashboard/sections/Other";
+import { PackagesSection } from "@/components/dashboard/sections/Package";
+import { UsersSection } from "@/components/dashboard/sections/User";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Card } from "@/components/ui/card";
-import { Loader } from "@/components/Loader";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 export default function DashboardPage() {
   const router = useNavigate();
   const [activeSection, setActiveSection] = useState("users");
@@ -23,7 +22,7 @@ export default function DashboardPage() {
     // Check if user is authenticated
     const auth = localStorage.getItem("adminAuth");
     if (!auth) {
-      router("/signin");
+      
     }
   }, [router]);
 
