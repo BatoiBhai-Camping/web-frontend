@@ -28,18 +28,19 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = {
-    id: "",
-    fullName: "",
-    email: "",
-    emailVerified: true,
-    role: "",
-    roleStatus: "",
-    phone: "",
-    createdAt: "",
-    profileImage: null,
-    address: [],
-  };
+        id: "",
+        fullName: "",
+        email: "",
+        emailVerified: true,
+        role: "",
+        roleStatus: "",
+        phone: "",
+        createdAt: "",
+        profileImage: null,
+        address: [],
+      };
       state.isAuthenticated = false;
+      state.hasUserData = false;
     },
   },
 });

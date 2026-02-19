@@ -33,11 +33,9 @@ export default function VerifyEmailPage() {
             </div>
           </div>
           <CardTitle className="text-3xl font-bold text-primary">
-            Verify Your Email
+            Check you mail for verification
           </CardTitle>
-          <CardDescription className="text-base">
-            Enter the verification code sent to your email
-          </CardDescription>
+          
         </CardHeader>
         <CardContent>
           <div  className="space-y-4">

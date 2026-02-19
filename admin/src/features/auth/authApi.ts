@@ -24,6 +24,7 @@ export const authApi = baseApi.injectEndpoints({
         
       })
     }),
+    
     logout: builder.mutation<void,void>({
       query: () => ({
         url: "/root-admin/logout",
