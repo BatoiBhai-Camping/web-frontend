@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { ToastContainer, Zoom } from "react-toastify";
-import AuthInitializer from "./Authentilizer";
 const App = () => {
   return (
     

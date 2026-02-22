@@ -6,25 +6,23 @@ import { setCredentials } from "@/features/auth/authSlice";
 import { Loader } from "@/components/Loader";
 import type { RootState, AppDispatch } from "@/store/store";
 
-const IsAuthRoute = (): any => {
+const IsRoleApproved = (): any => {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated: boolean = useSelector(
-    (state: RootState) => state.auth.isAuthenticated,
-  );
-  const hasUserData: boolean = useSelector(
-    (state: RootState) => state.auth.hasUserData as boolean,
-  );
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const hasUserData = useSelector((state: RootState) => state.auth.hasUserData);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const [isValidating, setIsValidating] = useState(true);
 
-  // Try to fetch user profile to validate authentication
-  const { data, isLoading, isError, isSuccess } =
-    useGetAdminRootAdminProfileQuery(undefined, {
-      skip: hasUserData && isAuthenticated, // Skip if already authenticated
-    });
-    
+  const { data, isLoading, isError, isSuccess } = useGetAdminRootAdminProfileQuery(
+    undefined,
+    {
+      skip: hasUserData && isAuthenticated,
+    },
+  );
+
   useEffect(() => {
-    // If already authenticated, no need to validate
+    // If already authenticated with user data, validate from Redux state
     if (isAuthenticated && hasUserData) {
       setIsValidating(false);
       return;
@@ -45,15 +43,7 @@ const IsAuthRoute = (): any => {
     if (!isLoading && !isAuthenticated) {
       setIsValidating(false);
     }
-  }, [
-    isSuccess,
-    isError,
-    isLoading,
-    isAuthenticated,
-    hasUserData,
-    data,
-    dispatch,
-  ]);
+  }, [isSuccess, isError, isLoading, isAuthenticated, hasUserData, data, dispatch]);
 
   // Show loader while validating authentication
   if (isValidating || isLoading) {
@@ -69,8 +59,13 @@ const IsAuthRoute = (): any => {
     return <Navigate to="/" replace />;
   }
 
-  // Render protected routes if authenticated
+  // Check role and status from Redux state
+  if (user.role === "ADMIN" && user.roleStatus !== "APPROVED") {
+    return <Navigate to="/profile" replace />;
+  }
+
+  // Render protected routes if authenticated and approved
   return <Outlet />;
 };
 
-export default IsAuthRoute;
+export default IsRoleApproved;

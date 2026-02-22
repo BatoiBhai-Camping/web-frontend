@@ -10,6 +10,13 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    registerAdmin: builder.mutation({
+      query: (data) => ({
+        url: "/admin/register",
+        method: "POST",
+        body: data,
+      }),
+    }),
     loginRootAdmin: builder.mutation({
       query: (data) => ({
         url: "/root-admin/login",
@@ -17,21 +24,35 @@ export const authApi = baseApi.injectEndpoints({
         body:data
       })
     }),
-    getRootAdminProfile: builder.query<userProfileapi, void>({
+    getAdminRootAdminProfile: builder.query<userProfileapi, void>({
       query:() => ({
-        url: "/root-admin/get-profile",
+        url: "/admin/get-profile",
         method: "GET",
         
       })
     }),
-    
+    verifyRootAdminEmail: builder.mutation({
+      query: (data) => ({
+        url: "/root-admin/verify-account",
+        method: "POST",
+        body:data
+      })
+    }),
+    resendRootAdminEmailVerifyLink: builder.mutation({
+      query: (data)=> ({
+        url: "/root-admin/send-verification-link",
+        method: "POST",
+
+      })
+    }),
     logout: builder.mutation<void,void>({
-      query: () => ({
+      query: (data) => ({
         url: "/root-admin/logout",
-        method: "DELETE"
+        method: "DELETE",
+        body: data
       })
     })
   }),
 });
 
-export const { useRegisterRootAdminMutation, useGetRootAdminProfileQuery, useLoginRootAdminMutation, useLogoutMutation } = authApi;
+export const { useRegisterRootAdminMutation, useRegisterAdminMutation, useGetAdminRootAdminProfileQuery, useLoginRootAdminMutation, useLogoutMutation, useVerifyRootAdminEmailMutation , useResendRootAdminEmailVerifyLinkMutation} = authApi;

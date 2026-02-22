@@ -18,13 +18,7 @@ export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState("users");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    // Check if user is authenticated
-    const auth = localStorage.getItem("adminAuth");
-    if (!auth) {
-      
-    }
-  }, [router]);
+  
 
   const renderSection = () => {
     switch (activeSection) {

@@ -1,4 +1,4 @@
-import { useRegisterAdminMutation } from "../features/auth/authApi";
+import { useRegisterRootAdminMutation } from "../features/auth/authApi";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { Loader } from "@/components/Loader";
@@ -23,10 +23,8 @@ type SignUpFormInputs = {
   confirmPassword: string;
 };
 
-export default function SignUpPage() {
- 
-  const [registerAdmin, { isLoading }] =
-    useRegisterAdminMutation();
+export default function RootAdminSignUpPage() {
+  const [registerRootAdmin, { isLoading }] = useRegisterRootAdminMutation();
 
   const navigate = useNavigate();
 
@@ -43,7 +41,7 @@ export default function SignUpPage() {
   console.log("here is the user", user);
   const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     try {
-      const result = await registerAdmin({
+      const result = await registerRootAdmin({
         fullName: data.fullName,
         email: data.email,
         password: data.password,
@@ -52,29 +50,28 @@ export default function SignUpPage() {
       toast.success("Account created successfully!");
 
       navigate("/verify-email");
-    } catch (err:any) {
-
-      toast.error(err?.data?.message || "Registration failed. Please try again.");
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || "Registration failed. Please try again.",
+      );
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      {isLoading&& <Loader></Loader>}
-      <Card className="w-full max-w-md border-2 border-border shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 p-4">
+      {isLoading && <Loader></Loader>}
+      <Card className="w-full max-w-md border-2 border-red-200 dark:border-red-800 shadow-lg shadow-red-100 dark:shadow-red-950/50">
         <CardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">
-                TA
-              </span>
+            <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-700 rounded-lg flex items-center justify-center shadow-md shadow-red-500/50">
+              <span className="text-white font-bold text-xl">RA</span>
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold text-primary">
-            Create Account
+          <CardTitle className="text-3xl font-bold text-red-700 dark:text-red-400">
+            Root Admin Access
           </CardTitle>
-          <CardDescription className="text-base">
-            Admin Registration
+          <CardDescription className="text-base text-red-600 dark:text-red-500">
+            Root Administrator Registration
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -93,7 +90,7 @@ export default function SignUpPage() {
                     message: "Name must be at least 2 characters",
                   },
                 })}
-                className="border-border focus:ring-primary"
+                className="border-red-200 dark:border-red-800 focus:ring-red-500 focus:border-red-500"
               />
               {errors.fullName && (
                 <p className="text-sm text-destructive">
@@ -107,7 +104,7 @@ export default function SignUpPage() {
               </label>
               <Input
                 type="email"
-                placeholder="admin@travel.com"
+                placeholder="rootadmin@system.com"
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -115,7 +112,7 @@ export default function SignUpPage() {
                     message: "Invalid email address",
                   },
                 })}
-                className="border-border focus:ring-primary"
+                className="border-red-200 dark:border-red-800 focus:ring-red-500 focus:border-red-500"
               />
               {errors.email && (
                 <p className="text-sm text-destructive">
@@ -137,7 +134,7 @@ export default function SignUpPage() {
                     message: "Password must be at least 6 characters",
                   },
                 })}
-                className="border-border focus:ring-primary"
+                className="border-red-200 dark:border-red-800 focus:ring-red-500 focus:border-red-500"
               />
               {errors.password && (
                 <p className="text-sm text-destructive">
@@ -157,7 +154,7 @@ export default function SignUpPage() {
                   validate: (value) =>
                     value === password || "Passwords do not match",
                 })}
-                className="border-border focus:ring-primary"
+                className="border-red-200 dark:border-red-800 focus:ring-red-500 focus:border-red-500"
               />
               {errors.confirmPassword && (
                 <p className="text-sm text-destructive">
@@ -168,9 +165,9 @@ export default function SignUpPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold"
+              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold shadow-md shadow-red-500/30"
             >
-              Sign up
+              Create Root Admin Account
             </Button>
           </form>
           <div className="mt-6 text-center text-sm text-muted-foreground">
@@ -178,16 +175,16 @@ export default function SignUpPage() {
               Already have an account?{" "}
               <NavLink
                 to="/signin"
-                className="text-primary hover:underline font-semibold"
+                className="text-red-600 dark:text-red-400 hover:underline font-semibold"
               >
                 Sign In
               </NavLink>
             </p>
-            <p className="text-red-500">
-              Register as root admin{" "}
+            <p>
+              Register as Sub Admin{" "}
               <NavLink
-                to="/root-admin-signup"
-                className="text-red-600 dark:text-red-400 hover:underline font-semibold"
+                to="/signup"
+                className="text-primary hover:underline font-semibold"
               >
                 Sign up
               </NavLink>

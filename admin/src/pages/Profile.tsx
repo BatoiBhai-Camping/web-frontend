@@ -1,10 +1,8 @@
 import { Footer } from "@/components/dashboard/Foother";
 import { Navbar } from "@/components/dashboard/NavBar";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import { Loader } from "@/components/Loader";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -16,40 +14,20 @@ import {
 import type { AppDispatch, RootState } from "@/store/store";
 import { ArrowLeft, Calendar, Mail, MapPin, Phone, Shield } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { useGetRootAdminProfileQuery } from "../features/auth/authApi";
-import { setCredentials } from "../features/auth/authSlice";
 import type { userType } from "../types/userType";
 
 export default function ProfilePage() {
-  const router = useNavigate();
+ 
 
   const user: userType = useSelector((state: RootState) => state.auth.user);
-  const hasUserData: boolean = useSelector(
-    (state: RootState) => state.auth.hasUserData as boolean,
-  );
-  const dispatch = useDispatch<AppDispatch>();
+  
 
   // Call the hook at the top level of the component
-  const { data, isLoading, isError, error } = useGetRootAdminProfileQuery(
-    undefined,
-    {
-      skip: hasUserData, // Skip the query if we already have user data
-    },
-  );
-  console.log(data);
-
-  useEffect(() => {
-    // Dispatch credentials when data is successfully fetched
-    if (data && !hasUserData) {
-      toast.success("Successfully loaded user data");
-      dispatch(setCredentials(data?.data));
-    }
-  }, [data, hasUserData, dispatch]);
+ 
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {isLoading && <Loader></Loader>}
+      {/* {isLoading && <Loader></Loader>} */}
       <Navbar />
 
       <main className="flex-1 overflow-y-auto">

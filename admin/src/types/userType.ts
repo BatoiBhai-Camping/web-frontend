@@ -29,4 +29,6 @@ interface userProfileapi {
     success: boolean
 }
 
+
+
 export type  {addressType, userType, userProfileapi}
