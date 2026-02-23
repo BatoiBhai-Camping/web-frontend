@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,9 +9,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Shield, ChevronRight } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { setCredentials } from "../features/auth/authSlice";
+import { useGetAdminRootAdminProfileQuery } from "../features/auth/authApi";
+import { toast } from "react-toastify";
+
+import type { RootState } from "../store/store";
+import type { userType } from "@/types/userType";
+import { Loader } from "@/components/Loader";
 
 export default function Home() {
   const router = useNavigate();
+  const dispatch = useDispatch();
+  const hasCheckedAuth = useRef(false);
+
+  const hasUserData: boolean = useSelector((state: RootState) => {
+    return state.auth.hasUserData as boolean;
+  });
+  const isAuthenticated: boolean = useSelector((state: RootState) => {
+    return state.auth.isAuthenticated as boolean;
+  });
+  const { data, isLoading, isError, error, isSuccess } =
+    useGetAdminRootAdminProfileQuery(undefined, {
+      skip: hasUserData && isAuthenticated,
+    });
 
   const handleSignIn = () => {
     router("/signin");
@@ -21,8 +42,27 @@ export default function Home() {
     router("/signup");
   };
 
+  // Handle automatic profile fetching and authentication
+  useEffect(() => {
+    if (hasCheckedAuth.current) return;
+
+    if (isSuccess && data?.data) {
+      hasCheckedAuth.current = true;
+      dispatch(setCredentials(data.data));
+      toast.success("Welcome back! Redirecting to profile...");
+      router("/profile");
+    }
+
+    if (isError) {
+      hasCheckedAuth.current = true;
+      toast.error("Failed to fetch profile. Please sign in.");
+      router("/signin")
+    }
+  }, [isSuccess, isError, data, dispatch, router]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
+      {isLoading && <Loader></Loader>}
       <Card className="max-w-2xl w-full border-2 border-border shadow-2xl">
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto shadow-lg">
@@ -65,8 +105,6 @@ export default function Home() {
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
-
-          
         </CardContent>
       </Card>
     </div>

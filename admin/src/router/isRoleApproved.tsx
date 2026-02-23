@@ -5,6 +5,7 @@ import { useGetAdminRootAdminProfileQuery } from "@/features/auth/authApi";
 import { setCredentials } from "@/features/auth/authSlice";
 import { Loader } from "@/components/Loader";
 import type { RootState, AppDispatch } from "@/store/store";
+import { toast } from "react-toastify";
 
 const IsRoleApproved = (): any => {
   const dispatch = useDispatch<AppDispatch>();
@@ -61,6 +62,7 @@ const IsRoleApproved = (): any => {
 
   // Check role and status from Redux state
   if (user.role === "ADMIN" && user.roleStatus !== "APPROVED") {
+    toast.error("This account is not approved by root admin")
     return <Navigate to="/profile" replace />;
   }
 

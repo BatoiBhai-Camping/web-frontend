@@ -1,7 +1,7 @@
 import { Footer } from "@/components/dashboard/Foother";
 import { Navbar } from "@/components/dashboard/NavBar";
 import { Button } from "@/components/ui/button";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,19 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { AppDispatch, RootState } from "@/store/store";
+import type { RootState } from "@/store/store";
 import { ArrowLeft, Calendar, Mail, MapPin, Phone, Shield } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import type { userType } from "../types/userType";
 
 export default function ProfilePage() {
- 
-
   const user: userType = useSelector((state: RootState) => state.auth.user);
-  
-
-  // Call the hook at the top level of the component
- 
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -154,11 +148,11 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">
+                    <label className={` text-sm font-medium text-foreground`}>
                       Role Status
                     </label>
                     <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                      <span className="text-foreground">
+                      <span className={`${(user?.roleStatus != "APPROVED")?"text-red-500":"text-green-500"} text-foreground`}>
                         {user?.roleStatus || "N/A"}
                       </span>
                     </div>
@@ -297,9 +291,7 @@ export default function ProfilePage() {
               >
                 Change Password
               </Button>
-              <p className="text-sm text-muted-foreground mt-4">
-                Last password change: 30 days ago
-              </p>
+              
             </CardContent>
           </Card>
         </div>
