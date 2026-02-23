@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,15 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Shield, ChevronRight } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { setCredentials } from "../features/auth/authSlice";
-import { useGetAdminRootAdminProfileQuery } from "../features/auth/authApi";
+import { ChevronRight, Shield } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGetAdminRootAdminProfileQuery } from "../features/auth/authApi";
+import { setCredentials } from "../features/auth/authSlice";
 
-import type { RootState } from "../store/store";
-import type { userType } from "@/types/userType";
 import { Loader } from "@/components/Loader";
+import type { RootState } from "../store/store";
 
 export default function Home() {
   const router = useNavigate();

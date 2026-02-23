@@ -13,6 +13,7 @@ import VerifyEmailPage from "@/pages/VerifyEmail.tsx";
 import IsAuthRoute from "./isauthRoute.tsx";
 import IsRoleApproved from "./isRoleApproved.tsx";
 import RootAdminSignUpPage from "@/pages/RootAdminRegister.tsx";
+import SubAdminsPage from "@/pages/SubAdminManagement.tsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App></App>}>
@@ -36,6 +37,9 @@ const router = createBrowserRouter(
         path="/verify-email"
         element={<VerifyEmailPage></VerifyEmailPage>}
       ></Route>
+      <Route path="/sub-admins" element={<SubAdminsPage></SubAdminsPage>}>
+
+      </Route>
     </Route>,
   ),
 );

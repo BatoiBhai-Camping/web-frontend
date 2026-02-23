@@ -65,10 +65,10 @@ const handelLogout = async () => {
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        <button className="p-2 hover:bg-sidebar-accent rounded-lg transition relative">
+        {/* <button className="p-2 hover:bg-sidebar-accent rounded-lg transition relative">
           <Bell className="w-5 h-5 text-sidebar-foreground" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
-        </button>
+        </button> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
