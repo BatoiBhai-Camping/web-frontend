@@ -14,6 +14,7 @@ import IsAuthRoute from "./isauthRoute.tsx";
 import IsRoleApproved from "./isRoleApproved.tsx";
 import RootAdminSignUpPage from "@/pages/RootAdminRegister.tsx";
 import SubAdminsPage from "@/pages/SubAdminManagement.tsx";
+import UserDetailPage from "@/pages/UserPage.tsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App></App>}>
@@ -29,6 +30,9 @@ const router = createBrowserRouter(
           path="/dashboard"
           element={<DashboardPage></DashboardPage>}
         ></Route>
+        <Route path="/dashboard/users/:id" element={<UserDetailPage></UserDetailPage>}>
+
+        </Route>
       </Route>
       <Route element={<IsAuthRoute></IsAuthRoute>}>
         <Route path="/profile" element={<ProfilePage></ProfilePage>}></Route>
