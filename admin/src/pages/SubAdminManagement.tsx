@@ -8,6 +8,7 @@ import { Footer } from "@/components/dashboard/Foother";
 import {
   useGetSubAdminsQuery,
   useApproveSubAdminMutation,
+  useRejectSubAdminMutation,
 } from "@/features/root-admin/rootAdminApi";
 import { Loader } from "@/components/Loader";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,13 +27,17 @@ export default function SubAdminsPage() {
     approveSubAdmin,
     { isLoading: approveAdminLoading, isSuccess: approveAdminsuccess },
   ] = useApproveSubAdminMutation();
-  useEffect(() => {
-    if (approveAdminsuccess) {
-      refetch();
-    }
-  }, [approveAdminsuccess, refetch]);
+  const [
+    rejecteSubAdmin,
+    { isLoading: rejectAdminLoading, isSuccess: rejectAdminsuccess },
+  ] = useRejectSubAdminMutation();
 
   const { subAdmins } = useSelector((state: RootState) => state.rootAdmin);
+  useEffect(() => {
+    if (approveAdminsuccess || rejectAdminsuccess) {
+      refetch();
+    }
+  }, [approveAdminsuccess, refetch, rejectAdminsuccess]);
 
   // Store API data in Redux when fetched
   useEffect(() => {
@@ -52,6 +57,12 @@ export default function SubAdminsPage() {
         toast.error(err?.data?.message || "Approve of subadmin fail");
       }
     } else {
+      try {
+        const res = await rejecteSubAdmin({ id: id }).unwrap();
+        toast.success("Admin is rejected successfully");
+      } catch (err: any) {
+        toast.error(err?.data?.message || "Rejection of admin fail");
+      }
     }
   };
 
@@ -109,7 +120,9 @@ export default function SubAdminsPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {(isLoading || approveAdminLoading) && <Loader></Loader>}
+      {(isLoading || approveAdminLoading || rejectAdminLoading) && (
+        <Loader></Loader>
+      )}
       <Navbar />
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">

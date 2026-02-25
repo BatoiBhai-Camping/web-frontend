@@ -17,7 +17,14 @@ const rootAdminApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    rejectSubAdmin: builder.mutation<approveSubAdminType, { id: string }>({
+      query: (data: { id: string }) => ({
+        url: "/root-admin/reject-sub-admin",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetSubAdminsQuery, useApproveSubAdminMutation} = rootAdminApi;
+export const { useGetSubAdminsQuery, useApproveSubAdminMutation,useRejectSubAdminMutation} = rootAdminApi;
