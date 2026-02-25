@@ -23,12 +23,17 @@ interface userType {
 }
 
 interface userProfileapi {
-    statusCode: Number,
-    data: userType,
-    message: string,
-    success: boolean
+  statusCode: Number;
+  data: userType;
+  message: string;
+  success: boolean;
 }
 
+interface SubAdminsResponse {
+  statusCode: number;
+  data: userType[];
+  message: string;
+  success: boolean;
+}
 
-
-export type  {addressType, userType, userProfileapi}
+export type { addressType, userType, userProfileapi, SubAdminsResponse };
